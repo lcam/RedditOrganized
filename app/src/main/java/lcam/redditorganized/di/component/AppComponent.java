@@ -2,6 +2,8 @@ package lcam.redditorganized.di.component;
 
 import android.app.Application;
 
+import javax.inject.Singleton;
+
 import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjector;
@@ -9,12 +11,15 @@ import dagger.android.support.AndroidSupportInjectionModule;
 import lcam.redditorganized.base.BaseApplication;
 import lcam.redditorganized.di.module.ActivityBuildersModule;
 import lcam.redditorganized.di.module.AppModule;
+import lcam.redditorganized.di.module.ViewModelFactoryModule;
 
+@Singleton
 @Component(
         modules = {
                 AndroidSupportInjectionModule.class,
                 ActivityBuildersModule.class,
-                AppModule.class
+                AppModule.class,
+                ViewModelFactoryModule.class //adding this to appComponent cuz this will be used by all ViewModels in the project
         }
 )
 public interface AppComponent extends AndroidInjector<BaseApplication> {
