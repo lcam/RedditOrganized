@@ -1,5 +1,6 @@
 package lcam.redditorganized.ui.auth;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerAppCompatActivity;
 import lcam.redditorganized.R;
 import lcam.redditorganized.models.User;
+import lcam.redditorganized.ui.main.MainActivity;
 import lcam.redditorganized.viewmodels.ViewModelProviderFactory;
 
 public class AuthActivity extends DaggerAppCompatActivity implements View.OnClickListener {
@@ -72,6 +74,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
                         case AUTHENTICATED:{
                             showProgressBar(false);
                             Log.d(TAG, "onChanged: LOGIN_SUCCESS: " + userAuthResource.data.getEmail());
+                            onLoginSuccess();
                             break;
                         }
 
@@ -90,6 +93,13 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
                 }
             }
         });
+    }
+
+    //redirect to Main screen upon successful login
+    private void onLoginSuccess(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void showProgressBar(boolean isVisible){
