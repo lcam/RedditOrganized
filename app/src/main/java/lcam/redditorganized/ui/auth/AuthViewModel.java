@@ -1,5 +1,7 @@
 package lcam.redditorganized.ui.auth;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MediatorLiveData;
@@ -11,25 +13,31 @@ import javax.inject.Inject;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import lcam.redditorganized.SessionManager;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.network.auth.AuthApi;
 
 public class AuthViewModel extends ViewModel {
+    private static final String TAG = "AuthViewModel";
 
+    //inject
     private final AuthApi authApi;
-
-    private MediatorLiveData<AuthResource<User>> authUser = new MediatorLiveData<>();
+    private SessionManager sessionManager;
 
     @Inject
-    public AuthViewModel(AuthApi authApi) {
+    public AuthViewModel(AuthApi authApi, SessionManager sessionManager) {
         this.authApi = authApi;
+        this.sessionManager = sessionManager;
     }
 
     public void authenticateWithId(int userId){
-        authUser.setValue(AuthResource.loading((User)null));
+        Log.d(TAG, "authenticateWithId: attempting to login");
+        sessionManager.authenticateWithId(queryUserId(userId));
+    }
 
+    private LiveData<AuthResource<User>> queryUserId(int userId){
         //converting Flowable to LiveData obj, doing the api call
-        final LiveData<AuthResource<User>> source = LiveDataReactiveStreams.fromPublisher(
+        return LiveDataReactiveStreams.fromPublisher(
                 authApi.getUser(userId)
 
                         //instead of calling onError (error happens)
@@ -42,6 +50,7 @@ public class AuthViewModel extends ViewModel {
                             }
                         })
 
+                        //wrap User object in AuthResource
                         .map(new Function<User, AuthResource<User>>() {
                             @Override
                             public AuthResource<User> apply(User user) throws Exception {
@@ -52,22 +61,13 @@ public class AuthViewModel extends ViewModel {
                             }
                         })
 
-                .subscribeOn(Schedulers.io()) //subscribe on a background thread
+                        .subscribeOn(Schedulers.io()) //subscribe on a background thread
         );
-
-        //get source LiveData obj set to  authUser LiveData obj --> by using MediatorLiveData
-        authUser.addSource(source, new Observer<AuthResource<User>>() {
-            @Override
-            public void onChanged(AuthResource<User> user) {
-                authUser.setValue(user);
-                authUser.removeSource(source); //remove cuz we no longer need to listen to it
-            }
-        });
     }
 
     //observe MediatorLiveData from the UI
-    public LiveData<AuthResource<User>> observeUser(){
-        return authUser; //observe this LiveData obj, any changes made to that obj will get updated to UI
+    public LiveData<AuthResource<User>> observeAuthState(){
+        return sessionManager.getAuthUser(); //observe this LiveData obj, any changes made to that obj will get updated to UI
                          //in this case, the only time it will get changed is if we successfully authenticate
     }
 

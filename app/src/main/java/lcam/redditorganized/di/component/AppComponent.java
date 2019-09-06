@@ -8,6 +8,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
+import lcam.redditorganized.SessionManager;
 import lcam.redditorganized.base.BaseApplication;
 import lcam.redditorganized.di.module.ActivityBuildersModule;
 import lcam.redditorganized.di.module.AppModule;
@@ -23,6 +24,8 @@ import lcam.redditorganized.di.module.ViewModelFactoryModule;
         }
 )
 public interface AppComponent extends AndroidInjector<BaseApplication> {
+
+    SessionManager sessionManager(); //we want this to exist as long as the app is alive
 
     @Component.Builder
     interface Builder{
