@@ -12,10 +12,10 @@ public abstract class ActivityBuildersModule {
     //only for Activity declarations, these are subcomponents
 
     @ContributesAndroidInjector(
-            modules = {AuthViewModelsModule.class, AuthModule.class} //Now, only the AuthActivity SubComponent will be able to use this ViewModel
+            modules = {AuthViewModelsModule.class, AuthModule.class} //creating dependencies that can only be accessed inside this subcomponent
     ) //AuthActivity is now a potential client that I can inject dependencies into
     abstract AuthActivity contributeAuthActivity();
 
     @ContributesAndroidInjector
-    abstract MainActivity contributeMainActivity();
+    abstract MainActivity contributeMainActivity(); //adds MainActivity as a subcomponent -> generates subcomponent code
 }
