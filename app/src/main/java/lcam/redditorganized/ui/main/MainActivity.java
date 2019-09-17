@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import lcam.redditorganized.BaseActivity;
 import lcam.redditorganized.R;
+import lcam.redditorganized.ui.main.posts.PostsFragments;
 import lcam.redditorganized.ui.main.profile.ProfileFragment;
 
 public class MainActivity extends BaseActivity {
@@ -25,7 +26,7 @@ public class MainActivity extends BaseActivity {
 
     private void testFragment(){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.main_container, new ProfileFragment())
+                .replace(R.id.main_container, new PostsFragments())
                 .commit();
     }
 

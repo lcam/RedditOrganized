@@ -10,7 +10,7 @@ import retrofit2.http.Query;
 public interface MainApi {
 
     // posts?userId=1   @Query would append a ? mark
-    @GET
+    @GET("posts")
     Flowable<List<Post>> getPostsFromUser(
             @Query("userId") int id
     );
