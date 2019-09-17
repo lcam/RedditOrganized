@@ -5,6 +5,7 @@ import dagger.android.ContributesAndroidInjector;
 import lcam.redditorganized.di.auth.AuthModule;
 import lcam.redditorganized.di.auth.AuthViewModelsModule;
 import lcam.redditorganized.di.main.MainFragmentBuildersModule;
+import lcam.redditorganized.di.main.MainModule;
 import lcam.redditorganized.di.main.MainViewModelsModule;
 import lcam.redditorganized.ui.auth.AuthActivity;
 import lcam.redditorganized.ui.main.MainActivity;
@@ -19,7 +20,7 @@ public abstract class ActivityBuildersModule {
     abstract AuthActivity contributeAuthActivity();
 
     @ContributesAndroidInjector(
-            modules = {MainFragmentBuildersModule.class, MainViewModelsModule.class}
+            modules = {MainFragmentBuildersModule.class, MainViewModelsModule.class, MainModule.class}
     )
     abstract MainActivity contributeMainActivity(); //adds MainActivity as a subcomponent -> generates subcomponent code
 }

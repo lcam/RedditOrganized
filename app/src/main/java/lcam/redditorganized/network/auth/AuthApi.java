@@ -9,6 +9,7 @@ import retrofit2.http.Path;
 
 public interface AuthApi {
 
+    // @Path would append a / to url
     @GET("users/{id}")
     Flowable<User> getUser(
             @Path("id") int id
