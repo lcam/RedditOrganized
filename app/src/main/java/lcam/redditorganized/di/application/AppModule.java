@@ -1,4 +1,4 @@
-package lcam.redditorganized.di.module;
+package lcam.redditorganized.di.application;
 
 import android.app.Application;
 import android.graphics.drawable.Drawable;

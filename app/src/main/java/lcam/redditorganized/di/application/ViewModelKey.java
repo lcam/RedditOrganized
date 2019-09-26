@@ -1,4 +1,4 @@
-package lcam.redditorganized.di;
+package lcam.redditorganized.di.application;
 
 import androidx.lifecycle.ViewModel;
 

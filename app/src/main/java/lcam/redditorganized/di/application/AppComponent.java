@@ -1,4 +1,4 @@
-package lcam.redditorganized.di.component;
+package lcam.redditorganized.di.application;
 
 import android.app.Application;
 
@@ -10,9 +10,6 @@ import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 import lcam.redditorganized.SessionManager;
 import lcam.redditorganized.base.BaseApplication;
-import lcam.redditorganized.di.module.ActivityBuildersModule;
-import lcam.redditorganized.di.module.AppModule;
-import lcam.redditorganized.di.module.ViewModelFactoryModule;
 
 @Singleton
 @Component(

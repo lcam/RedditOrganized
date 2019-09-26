@@ -1,10 +1,9 @@
-package lcam.redditorganized.di.module;
+package lcam.redditorganized.di.application;
 
 import androidx.lifecycle.ViewModelProvider;
 
 import dagger.Binds;
 import dagger.Module;
-import dagger.Provides;
 import lcam.redditorganized.viewmodels.ViewModelProviderFactory;
 
 @Module

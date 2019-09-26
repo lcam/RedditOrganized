@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
-import lcam.redditorganized.di.ViewModelKey;
+import lcam.redditorganized.di.application.ViewModelKey;
 import lcam.redditorganized.ui.main.posts.PostsViewModel;
 import lcam.redditorganized.ui.main.profile.ProfileViewModel;
 
