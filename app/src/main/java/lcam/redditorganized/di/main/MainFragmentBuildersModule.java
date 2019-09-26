@@ -2,7 +2,7 @@ package lcam.redditorganized.di.main;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
-import lcam.redditorganized.ui.main.posts.PostsFragments;
+import lcam.redditorganized.ui.main.posts.PostsFragment;
 import lcam.redditorganized.ui.main.profile.ProfileFragment;
 
 @Module
@@ -12,5 +12,5 @@ public abstract class MainFragmentBuildersModule {
     abstract ProfileFragment contributeProfileFragment();
 
     @ContributesAndroidInjector
-    abstract PostsFragments contributePostsFragment();
+    abstract PostsFragment contributePostsFragment();
 }
