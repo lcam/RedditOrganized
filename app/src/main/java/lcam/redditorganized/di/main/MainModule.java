@@ -10,11 +10,13 @@ import retrofit2.Retrofit;
 public class MainModule {
 
     //Allows us to inject the adapter as a dependency
+    @MainScope
     @Provides
     static PostsRecyclerAdapter provideAdapter(){
         return new PostsRecyclerAdapter();
     }
 
+    @MainScope
     @Provides
     static MainApi provideMainApi(Retrofit retrofit){
         return retrofit.create(MainApi.class);

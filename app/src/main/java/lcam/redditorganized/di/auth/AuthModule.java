@@ -9,6 +9,7 @@ import retrofit2.Retrofit;
 public class AuthModule {
 
     //add dependencies for the Auth SubComponent
+    @AuthScope
     @Provides
     static AuthApi provideAuthApi(Retrofit retrofit){
         return retrofit.create(AuthApi.class);
