@@ -4,16 +4,13 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
-import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import lcam.redditorganized.SessionManager;
+import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.network.auth.AuthApi;
 

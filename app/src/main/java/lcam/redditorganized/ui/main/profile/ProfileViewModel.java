@@ -1,14 +1,13 @@
 package lcam.redditorganized.ui.main.profile;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
-import lcam.redditorganized.SessionManager;
+import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.ui.auth.AuthResource;
 

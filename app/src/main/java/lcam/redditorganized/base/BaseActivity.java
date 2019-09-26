@@ -1,9 +1,8 @@
-package lcam.redditorganized;
+package lcam.redditorganized.base;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;

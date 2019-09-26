@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import lcam.redditorganized.SessionManager;
+import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.models.Post;
 import lcam.redditorganized.network.main.MainApi;
 import lcam.redditorganized.ui.main.Resource;

@@ -16,9 +16,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 
-import lcam.redditorganized.BaseActivity;
+import lcam.redditorganized.base.BaseActivity;
 import lcam.redditorganized.R;
-import lcam.redditorganized.ui.main.posts.PostsFragment;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 

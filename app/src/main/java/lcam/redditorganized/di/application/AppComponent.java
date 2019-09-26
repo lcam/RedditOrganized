@@ -8,7 +8,7 @@ import dagger.BindsInstance;
 import dagger.Component;
 import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
-import lcam.redditorganized.SessionManager;
+import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.base.BaseApplication;
 
 @Singleton

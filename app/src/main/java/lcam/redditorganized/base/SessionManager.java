@@ -1,4 +1,4 @@
-package lcam.redditorganized;
+package lcam.redditorganized.base;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
