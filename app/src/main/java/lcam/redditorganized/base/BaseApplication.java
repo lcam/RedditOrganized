@@ -3,7 +3,7 @@ package lcam.redditorganized.base;
 
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
-import lcam.redditorganized.di.component.DaggerAppComponent;
+import lcam.redditorganized.di.application.DaggerAppComponent;
 
 public class BaseApplication extends DaggerApplication {
     @Override
