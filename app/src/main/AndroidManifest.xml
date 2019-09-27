@@ -17,9 +17,21 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="www.example.com"
+                    android:scheme="http"
+                    android:path="/my_redirect" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.main.MainActivity" />
+
+        <activity android:name=".ui.main.MainActivity">
+
+        </activity>
+
     </application>
 
 </manifest>
