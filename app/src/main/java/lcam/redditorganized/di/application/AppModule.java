@@ -14,7 +14,9 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import lcam.redditorganized.R;
+import lcam.redditorganized.network.auth.AuthenticateUser;
 import lcam.redditorganized.util.Constants;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -31,6 +33,18 @@ public class AppModule {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
+    }
+
+    @Singleton
+    @Provides
+    static OkHttpClient provideOkHttpInstance(){
+        return new OkHttpClient();
+    }
+
+    @Singleton
+    @Provides
+    static AuthenticateUser provideAuthenticatedUser(OkHttpClient client){
+        return new AuthenticateUser(client);
     }
 
     @Singleton

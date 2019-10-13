@@ -19,6 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.network.auth.AuthApi;
+import lcam.redditorganized.network.auth.AuthenticateUser;
 import lcam.redditorganized.util.Constants;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -34,11 +35,13 @@ public class AuthViewModel extends ViewModel {
     //inject
     private final AuthApi authApi;
     private SessionManager sessionManager;
+    private AuthenticateUser authenticateUser;
 
     @Inject
-    public AuthViewModel(AuthApi authApi, SessionManager sessionManager) {
+    public AuthViewModel(AuthApi authApi, SessionManager sessionManager, AuthenticateUser authenticateUser) {
         this.authApi = authApi;
         this.sessionManager = sessionManager;
+        this.authenticateUser = authenticateUser;
     }
 
     public void authenticateWithId(int userId){
@@ -86,20 +89,8 @@ public class AuthViewModel extends ViewModel {
     public void getAccessToken(String code) {
         Log.d(TAG, "Inside getAccessToken!!!");
 
-        OkHttpClient client = new OkHttpClient();
-
-        String authString = Constants.CLIENT_ID + ":";
-        String encodedAuthString = Base64.encodeToString(authString.getBytes(),
-                Base64.NO_WRAP);
-
-        Request request = new Request.Builder()
-                .addHeader("User-Agent", "Sample App")
-                .addHeader("Authorization", "Basic " + encodedAuthString)
-                .url(Constants.ACCESS_TOKEN_URL)
-                .post(RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),
-                        "grant_type=authorization_code&code=" + code +
-                                "&redirect_uri=" + Constants.REDIRECT_URI))
-                .build();
+        OkHttpClient client = authenticateUser.buildClient();
+        Request request = authenticateUser.buildRequest(code);
 
         client.newCall(request).enqueue(new Callback() {
             @Override
