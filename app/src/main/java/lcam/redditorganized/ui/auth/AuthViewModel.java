@@ -1,6 +1,5 @@
 package lcam.redditorganized.ui.auth;
 
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -20,13 +19,10 @@ import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.network.auth.AuthApi;
 import lcam.redditorganized.network.auth.AuthenticateUser;
-import lcam.redditorganized.util.Constants;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class AuthViewModel extends ViewModel {
