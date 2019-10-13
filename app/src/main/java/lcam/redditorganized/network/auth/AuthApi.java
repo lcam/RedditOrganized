@@ -18,10 +18,4 @@ public interface AuthApi {
     Flowable<User> getUser(
             @Path("id") int id
     );
-
-    // access_token
-    @GET("access_token")
-    Flowable<List<Post>> getAccessToken(
-            //@Query("userId") int id
-    );
 }
