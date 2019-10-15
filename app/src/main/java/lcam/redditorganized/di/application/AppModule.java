@@ -15,6 +15,7 @@ import dagger.Module;
 import dagger.Provides;
 import lcam.redditorganized.R;
 import lcam.redditorganized.network.auth.AuthenticateUser;
+import lcam.redditorganized.network.auth.SupportInterceptor;
 import lcam.redditorganized.util.Constants;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -25,11 +26,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
     //application level dependencies like retrofit, glide
 
+//    @Singleton
+//    @Provides
+//    static Retrofit provideRetrofitInstance(){
+//        return new Retrofit.Builder()
+//                .baseUrl(Constants.BASE_URL)
+//                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//    }
+
     @Singleton
     @Provides
-    static Retrofit provideRetrofitInstance(){
+    static Retrofit provideRetrofitInstance(OkHttpClient client){
         return new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
+                .baseUrl(Constants.REDDIT_BASE_URL)
+                .client(client)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -37,13 +49,23 @@ public class AppModule {
 
     @Singleton
     @Provides
-    static OkHttpClient provideOkHttpInstance(){
-        return new OkHttpClient();
+    static OkHttpClient provideOkHttpInstance(SupportInterceptor supportInterceptor){
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .addInterceptor(supportInterceptor)
+                .build();
+
+        return client;
     }
 
     @Singleton
     @Provides
-    static AuthenticateUser provideAuthenticatedUser(OkHttpClient client){
+    static SupportInterceptor provideSupportInterceptor(){
+        return new SupportInterceptor();
+    }
+
+    @Singleton
+    @Provides
+    static AuthenticateUser provideAuthenticatedUser(Retrofit client){
         return new AuthenticateUser(client);
     }
 

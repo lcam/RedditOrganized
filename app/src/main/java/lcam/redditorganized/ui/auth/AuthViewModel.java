@@ -6,24 +6,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.ViewModel;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import lcam.redditorganized.base.SessionManager;
+import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.network.auth.AuthApi;
 import lcam.redditorganized.network.auth.AuthenticateUser;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import lcam.redditorganized.util.Constants;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class AuthViewModel extends ViewModel {
     private static final String TAG = "AuthViewModel";
@@ -83,34 +79,33 @@ public class AuthViewModel extends ViewModel {
 
 
     public void getAccessToken(String code) {
-        Log.d(TAG, "Inside getAccessToken!!!");
+        Log.d(TAG, "Inside getAccessToken2!!!");
 
-        OkHttpClient client = authenticateUser.buildClient();
-        Request request = authenticateUser.buildRequest(code);
+        AuthApi authApi = authenticateUser.getSimpleClient();
 
-        client.newCall(request).enqueue(new Callback() {
+        Call<OAuthToken> getRequestTokenFormCall = authApi.requestTokenForm(
+                code,
+                Constants.CLIENT_ID,
+                Constants.REDIRECT_URI,
+                Constants.GRANT_TYPE_AUTHORIZATION_CODE
+        );
+
+        getRequestTokenFormCall.enqueue(new Callback<OAuthToken>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "ERROR: " + e);
+            public void onResponse(Call<OAuthToken> call, Response<OAuthToken> response) {
+                Log.e(TAG, "===============SUCCESS==========================");
+                OAuthToken oAuthToken = response.body();
+                Log.d(TAG, "access token: " + oAuthToken.getAccessToken());
+                Log.d(TAG, "refresh token: " + oAuthToken.getRefreshToken());
+
             }
-
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String json = response.body().string();
-
-                JSONObject data = null;
-                try {
-                    data = new JSONObject(json);
-                    String accessToken = data.optString("access_token");
-                    String refreshToken = data.optString("refresh_token");
-
-                    Log.d(TAG, "Access Token = " + accessToken);
-                    Log.d(TAG, "Refresh Token = " + refreshToken);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            public void onFailure(Call<OAuthToken> call, Throwable t) {
+                Log.e(TAG, "===============FAILURE==========================");
+                Log.e(TAG, "The call getRequestTokenFormCall failed", t);
             }
         });
+
     }
 
 }

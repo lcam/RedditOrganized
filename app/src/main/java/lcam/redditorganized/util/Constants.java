@@ -3,7 +3,7 @@ package lcam.redditorganized.util;
 public class Constants {
     public static final String BASE_URL = "https://jsonplaceholder.typicode.com";
 
-    public static final String REDDIT_BASE_URL = "https://www.reddit.com/api/v1";
+    public static final String REDDIT_BASE_URL = "https://www.reddit.com/api/v1/";
 
 
     public static final String AUTH_URL =
@@ -17,6 +17,8 @@ public class Constants {
             "http://www.example.com/my_redirect";
 
     public static final String STATE = "MY_RANDOM_STRING_1";
+
+    public static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
 
     public static final String ACCESS_TOKEN_URL =
             "https://www.reddit.com/api/v1/access_token";
