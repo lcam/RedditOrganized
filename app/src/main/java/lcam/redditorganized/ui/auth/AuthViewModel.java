@@ -79,9 +79,9 @@ public class AuthViewModel extends ViewModel {
 
 
     public void getAccessToken(String code) {
-        Log.d(TAG, "Inside getAccessToken2!!!");
+        Log.d(TAG, "Inside getAccessToken!!!");
 
-        AuthApi authApi = authenticateUser.getSimpleClient();
+        //AuthApi authApi = authenticateUser.getSimpleClient();
 
         Call<OAuthToken> getRequestTokenFormCall = authApi.requestTokenForm(
                 code,
