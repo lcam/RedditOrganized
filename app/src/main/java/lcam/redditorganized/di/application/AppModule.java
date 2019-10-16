@@ -14,7 +14,9 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import lcam.redditorganized.R;
+import lcam.redditorganized.network.auth.AuthApi;
 import lcam.redditorganized.network.auth.AuthenticateUser;
+import lcam.redditorganized.network.auth.NetworkClient;
 import lcam.redditorganized.network.auth.SupportInterceptor;
 import lcam.redditorganized.util.Constants;
 import okhttp3.OkHttpClient;
@@ -63,11 +65,17 @@ public class AppModule {
         return new SupportInterceptor();
     }
 
-    @Singleton
-    @Provides
-    static AuthenticateUser provideAuthenticatedUser(Retrofit client){
-        return new AuthenticateUser(client);
-    }
+//    @Singleton
+//    @Provides
+//    static AuthenticateUser provideAuthenticatedUser(NetworkClient client){
+//        return new AuthenticateUser(client);
+//    }
+//
+//    @Singleton
+//    @Provides
+//    static NetworkClient provideNetworkClient(AuthApi authApi){
+//        return new NetworkClient(authApi);
+//    }
 
     @Singleton
     @Provides

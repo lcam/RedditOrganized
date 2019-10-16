@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import lcam.redditorganized.base.SessionManager;
@@ -15,10 +17,6 @@ import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.network.auth.AuthApi;
 import lcam.redditorganized.network.auth.AuthenticateUser;
-import lcam.redditorganized.util.Constants;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class AuthViewModel extends ViewModel {
@@ -81,30 +79,29 @@ public class AuthViewModel extends ViewModel {
     public void getAccessToken(String code) {
         Log.d(TAG, "Inside getAccessToken!!!");
 
-        //AuthApi authApi = authenticateUser.getSimpleClient();
+        authenticateUser.queryToken(code)
+                .subscribe(new Observer<OAuthToken>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-        Call<OAuthToken> getRequestTokenFormCall = authApi.requestTokenForm(
-                code,
-                Constants.CLIENT_ID,
-                Constants.REDIRECT_URI,
-                Constants.GRANT_TYPE_AUTHORIZATION_CODE
-        );
+                    }
 
-        getRequestTokenFormCall.enqueue(new Callback<OAuthToken>() {
-            @Override
-            public void onResponse(Call<OAuthToken> call, Response<OAuthToken> response) {
-                Log.e(TAG, "===============SUCCESS==========================");
-                OAuthToken oAuthToken = response.body();
-                Log.d(TAG, "access token: " + oAuthToken.getAccessToken());
-                Log.d(TAG, "refresh token: " + oAuthToken.getRefreshToken());
+                    @Override
+                    public void onNext(OAuthToken oAuthToken) {
+                        Log.d(TAG, "onNext access token: " + oAuthToken.getAccessToken());
+                        Log.d(TAG, "onNext refresh token: " + oAuthToken.getRefreshToken());
+                    }
 
-            }
-            @Override
-            public void onFailure(Call<OAuthToken> call, Throwable t) {
-                Log.e(TAG, "===============FAILURE==========================");
-                Log.e(TAG, "The call getRequestTokenFormCall failed", t);
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
 
     }
 

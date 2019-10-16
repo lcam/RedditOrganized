@@ -21,7 +21,7 @@ public interface AuthApi {
 
     @FormUrlEncoded
     @POST(Constants.ACCESS_TOKEN_URL)
-    Call<OAuthToken> requestTokenForm(
+    Flowable<OAuthToken> requestTokenForm(
             @Field("code")String code,
             @Field("client_id")String client_id,
             @Field("redirect_uri")String redirect_uri,
