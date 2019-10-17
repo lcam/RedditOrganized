@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import lcam.redditorganized.models.OAuthToken;
-import lcam.redditorganized.network.auth.AuthApi;
 import lcam.redditorganized.network.auth.AuthenticateUser;
 
 
@@ -17,12 +16,10 @@ public class AuthViewModel extends ViewModel {
     private static final String TAG = "AuthViewModel";
 
     //inject
-    private final AuthApi authApi;
     private AuthenticateUser authenticateUser;
 
     @Inject
-    public AuthViewModel(AuthApi authApi, AuthenticateUser authenticateUser) {
-        this.authApi = authApi;
+    public AuthViewModel(AuthenticateUser authenticateUser) {
         this.authenticateUser = authenticateUser;
     }
 
