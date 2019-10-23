@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
-import lcam.redditorganized.models.User;
+import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.ui.auth.AuthActivity;
 import lcam.redditorganized.ui.auth.AuthResource;
 
@@ -28,9 +28,9 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     }
 
     private void subscribeObservers(){
-        sessionManager.getAuthUser().observe(this, new Observer<AuthResource<User>>() {
+        sessionManager.getAuthUser().observe(this, new Observer<AuthResource<OAuthToken>>() {
             @Override
-            public void onChanged(AuthResource<User> userAuthResource) {
+            public void onChanged(AuthResource<OAuthToken> userAuthResource) {
                 if(userAuthResource != null){
                     switch (userAuthResource.status){
 
@@ -39,7 +39,7 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
                         }
 
                         case AUTHENTICATED:{
-                            Log.d(TAG, "onChanged: LOGIN_SUCCESS: " + userAuthResource.data.getEmail());
+                            Log.d(TAG, "onChanged: LOGIN_SUCCESS: " + userAuthResource.data.getAccessToken());
                             break;
                         }
 

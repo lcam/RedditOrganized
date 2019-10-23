@@ -8,20 +8,17 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 import lcam.redditorganized.R;
-import lcam.redditorganized.models.Post;
+import lcam.redditorganized.models.SavedList;
+import lcam.redditorganized.models.User;
 import lcam.redditorganized.ui.main.Resource;
 import lcam.redditorganized.util.VerticalSpacingItemDecoration;
 import lcam.redditorganized.viewmodels.ViewModelProviderFactory;
@@ -56,10 +53,34 @@ public class PostsFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(){
-        viewModel.observePosts().removeObservers(getViewLifecycleOwner()); //make sure to remove observers
-        viewModel.observePosts().observe(getViewLifecycleOwner(), new Observer<Resource<List<Post>>>() {
+        viewModel.getAuthenticatedUsername().removeObservers(getViewLifecycleOwner()); //make sure to remove observers
+        viewModel.getAuthenticatedUsername().observe(getViewLifecycleOwner(), new Observer<Resource<User>>() {
             @Override
-            public void onChanged(Resource<List<Post>> listResource) {
+            public void onChanged(Resource<User> userResource) {
+                if(userResource != null){
+                    switch (userResource.status){
+
+                        case SUCCESS:{
+                            Log.d(TAG, "onChanged: Got username!");
+                            subscribeObserversPosts(userResource.data);
+                            break;
+                        }
+
+                        case ERROR:{
+                            Log.d(TAG, "onChanged: ERROR!" + userResource.message);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void subscribeObserversPosts(User user){
+        viewModel.observePosts(user).removeObservers(getViewLifecycleOwner()); //make sure to remove observers
+        viewModel.observePosts(user).observe(getViewLifecycleOwner(), new Observer<Resource<SavedList>>() {
+            @Override
+            public void onChanged(Resource<SavedList> listResource) {
                 if(listResource != null){
                     switch (listResource.status){
 
@@ -69,13 +90,13 @@ public class PostsFragment extends DaggerFragment {
                         }
 
                         case SUCCESS:{
-                            Log.d(TAG, "onChanged: Got posts...");
-                            adapter.setPosts(listResource.data);
+                            Log.d(TAG, "onChanged: Got posts!");
+                            adapter.setPosts(listResource.data.getListData().getSavedPostList());
                             break;
                         }
 
                         case ERROR:{
-                            Log.d(TAG, "onChanged: ERROR..." + listResource.message);
+                            Log.d(TAG, "onChanged: ERROR!" + listResource.message);
                             break;
                         }
                     }

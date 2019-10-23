@@ -6,12 +6,12 @@ import io.reactivex.Flowable;
 import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.util.Constants;
 
-public class NetworkClient {
+public class AuthNetworkClient {
 
     private final AuthApi authApi;
 
     @Inject
-    public NetworkClient(AuthApi authApi) {
+    public AuthNetworkClient(AuthApi authApi) {
         this.authApi = authApi;
     }
 

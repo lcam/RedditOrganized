@@ -17,8 +17,10 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 import lcam.redditorganized.R;
+import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.models.User;
 import lcam.redditorganized.ui.auth.AuthResource;
+import lcam.redditorganized.ui.main.Resource;
 import lcam.redditorganized.viewmodels.ViewModelProviderFactory;
 
 public class ProfileFragment extends DaggerFragment {
@@ -26,7 +28,7 @@ public class ProfileFragment extends DaggerFragment {
     private static final String TAG = "ProfileFragment";
 
     private ProfileViewModel viewModel;
-    private TextView email, username, website;
+    private TextView username;
 
     @Inject
     ViewModelProviderFactory providerFactory;
@@ -43,9 +45,7 @@ public class ProfileFragment extends DaggerFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onViewCreated: ProfileFragment was created");
 
-        email = view.findViewById(R.id.email);
         username = view.findViewById(R.id.username);
-        website = view.findViewById(R.id.website);
 
         // ProfileFragment was created
         viewModel = ViewModelProviders.of(this, providerFactory).get(ProfileViewModel.class);
@@ -56,21 +56,21 @@ public class ProfileFragment extends DaggerFragment {
     private void subscribeObservers(){
         //removeObservers() and getViewLifecycleOwner() is specifically for fragments cuz they have their own lifecyle
         //fragments just do what the Android system wants them to do, so we gotta make sure to clean up the observers
-        viewModel.getAuthenticatedUser().removeObservers(getViewLifecycleOwner());
-        viewModel.getAuthenticatedUser().observe(getViewLifecycleOwner(), new Observer<AuthResource<User>>() {
+        viewModel.getAuthenticatedUsername().removeObservers(getViewLifecycleOwner());
+        viewModel.getAuthenticatedUsername().observe(getViewLifecycleOwner(), new Observer<Resource<User>>() {
             @Override
-            public void onChanged(AuthResource<User> userAuthResource) {
+            public void onChanged(Resource<User> userResource) {
 
-                if(userAuthResource != null){
-                    switch (userAuthResource.status){
+                if(userResource != null){
+                    switch (userResource.status){
 
-                        case AUTHENTICATED:{
-                            setUserDetails(userAuthResource.data);
+                        case SUCCESS:{
+                            setUserDetails(userResource.data);
                             break;
                         }
 
                         case ERROR:{
-                            setErrorDetails(userAuthResource.message);
+                            setErrorDetails(userResource.message);
                             break;
                         }
                     }
@@ -81,14 +81,10 @@ public class ProfileFragment extends DaggerFragment {
     }
 
     private void setErrorDetails(String message) {
-        email.setText(message);
         username.setText("error");
-        website.setText("error");
     }
 
     private void setUserDetails(User data) {
-        email.setText(data.getEmail());
         username.setText(data.getUsername());
-        website.setText(data.getWebsite());
     }
 }

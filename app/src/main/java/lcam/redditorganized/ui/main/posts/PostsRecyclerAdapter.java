@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lcam.redditorganized.R;
-import lcam.redditorganized.models.Post;
+import lcam.redditorganized.models.SavedPost;
 
 public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Post> posts = new ArrayList<>();
+    private List<SavedPost> posts = new ArrayList<>();
 
     @NonNull
     @Override
@@ -35,7 +35,7 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         return posts.size();
     }
 
-    public void setPosts(List<Post> posts){
+    public void setPosts(List<SavedPost> posts){
         this.posts = posts;
         notifyDataSetChanged();
     }
@@ -49,8 +49,8 @@ public class PostsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             title = itemView.findViewById(R.id.title);
         }
 
-        public void bind(Post post){
-            title.setText(post.getTitle());
+        public void bind(SavedPost post){
+            title.setText(post.getSavedPostAttributes().getTitle());
         }
     }
 }

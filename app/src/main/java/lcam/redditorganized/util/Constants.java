@@ -1,15 +1,16 @@
 package lcam.redditorganized.util;
 
 public class Constants {
-    public static final String BASE_URL = "https://jsonplaceholder.typicode.com";
 
     public static final String REDDIT_BASE_URL = "https://www.reddit.com/api/v1/";
+
+    public static final String REDDIT_API_URL = "https://oauth.reddit.com";
 
 
     public static final String AUTH_URL =
             "https://www.reddit.com/api/v1/authorize.compact?client_id=%s" +
                     "&response_type=code&state=%s&redirect_uri=%s&" +
-                    "duration=permanent&scope=identity";
+                    "duration=permanent&scope=identity history";
 
     public static final String CLIENT_ID = "eMjgbTd6OM2fkw";
 

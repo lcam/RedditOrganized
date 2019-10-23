@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -22,7 +19,7 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 import lcam.redditorganized.R;
-import lcam.redditorganized.models.User;
+import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.ui.main.MainActivity;
 import lcam.redditorganized.util.Constants;
 import lcam.redditorganized.viewmodels.ViewModelProviderFactory;
@@ -33,7 +30,6 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private AuthViewModel authViewModel;
 
-    private EditText userId;
     private ProgressBar progressBar;
 
     @Inject
@@ -45,20 +41,12 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     @Inject
     RequestManager requestManager; //Glide instance
 
-    public void startSignIn(View view) {
-        String url = String.format(Constants.AUTH_URL, Constants.CLIENT_ID, Constants.STATE, Constants.REDIRECT_URI);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-
-        Log.d(TAG, "URL" + url);
-
-        startActivity(intent);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if(getIntent()!=null && getIntent().getAction().equals(Intent.ACTION_VIEW)) {
+        if(getIntent()!=null && getIntent().getAction()!=null && getIntent().getAction().equals(Intent.ACTION_VIEW)) {
             Uri uri = getIntent().getData();
             if(uri.getQueryParameter("error") != null) {
                 String error = uri.getQueryParameter("error");
@@ -67,7 +55,8 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
                 String state = uri.getQueryParameter("state");
                 if(state.equals(Constants.STATE)) {
                     String code = uri.getQueryParameter("code");
-                    authViewModel.getAccessToken(code);
+                    //authViewModel.getAccessToken(code);
+                    authViewModel.authenticateWithCode(code);
                 }
             }
         }
@@ -77,7 +66,6 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        userId = findViewById(R.id.user_id_input);
         progressBar = findViewById(R.id.progress_bar);
 
         findViewById(R.id.login_button).setOnClickListener(this);
@@ -90,9 +78,9 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void subscribeObservers(){ //start observing the LiveData
-        authViewModel.observeAuthState().observe(this, new Observer<AuthResource<User>>() {
+        authViewModel.observeAuthState().observe(this, new Observer<AuthResource<OAuthToken>>() {
             @Override
-            public void onChanged(AuthResource<User> userAuthResource) {
+            public void onChanged(AuthResource<OAuthToken> userAuthResource) {
                 if(userAuthResource != null){
                     switch (userAuthResource.status){
 
@@ -103,7 +91,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
                         case AUTHENTICATED:{
                             showProgressBar(false);
-                            Log.d(TAG, "onChanged: LOGIN_SUCCESS: " + userAuthResource.data.getEmail());
+                            Log.d(TAG, "onChanged: LOGIN_SUCCESS: " + userAuthResource.data.getAccessToken());
                             onLoginSuccess();
                             break;
                         }
@@ -148,21 +136,20 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
 
-            case R.id.login_button:{
-
+            case R.id.login_button:
                 attemptLogin();
                 break;
-            }
         }
     }
 
-    private void attemptLogin() {
-        if(TextUtils.isEmpty(userId.getText().toString())){ //check if user id is null
-            return;
-        }
-        //attempt to login
-        authViewModel.authenticateWithId(Integer.parseInt(userId.getText().toString()));
+    public void attemptLogin() {
+        String url = String.format(Constants.AUTH_URL, Constants.CLIENT_ID, Constants.STATE, Constants.REDIRECT_URI);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+
+        Log.d(TAG, "URL: " + url);
+
+        startActivity(intent);
     }
 }

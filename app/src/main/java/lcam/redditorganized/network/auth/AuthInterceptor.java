@@ -9,9 +9,9 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class SupportInterceptor implements Interceptor {
+public class AuthInterceptor implements Interceptor {
 
-    public SupportInterceptor() {
+    public AuthInterceptor() {
     }
 
     @Override

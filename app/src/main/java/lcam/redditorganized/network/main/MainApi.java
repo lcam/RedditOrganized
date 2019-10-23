@@ -1,17 +1,22 @@
 package lcam.redditorganized.network.main;
 
-import java.util.List;
-
 import io.reactivex.Flowable;
-import lcam.redditorganized.models.Post;
+import lcam.redditorganized.models.SavedList;
+import lcam.redditorganized.models.User;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
+import retrofit2.http.Path;
 
 public interface MainApi {
 
-    // posts?userId=1   @Query would append a ? mark
-    @GET("posts")
-    Flowable<List<Post>> getPostsFromUser(
-            @Query("userId") int id
+    // https://oauth.reddit.com/api/v1/me
+    @GET("api/v1/me")
+    Flowable<User> getUserName(
     );
+
+    //https://oauth.reddit.com/user/leonzcamz101/saved
+    @GET("user/{id}/saved")
+    Flowable<SavedList> getSavedListFromUser(
+            @Path("id") String username
+    );
+
 }

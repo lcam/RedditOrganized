@@ -9,15 +9,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import lcam.redditorganized.R;
-import lcam.redditorganized.network.auth.AuthApi;
-import lcam.redditorganized.network.auth.AuthenticateUser;
-import lcam.redditorganized.network.auth.NetworkClient;
-import lcam.redditorganized.network.auth.SupportInterceptor;
+import lcam.redditorganized.base.SessionManager;
+import lcam.redditorganized.network.auth.AuthInterceptor;
+import lcam.redditorganized.network.main.MainInterceptor;
 import lcam.redditorganized.util.Constants;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -28,19 +28,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AppModule {
     //application level dependencies like retrofit, glide
 
-//    @Singleton
-//    @Provides
-//    static Retrofit provideRetrofitInstance(){
-//        return new Retrofit.Builder()
-//                .baseUrl(Constants.BASE_URL)
-//                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build();
-//    }
-
     @Singleton
     @Provides
-    static Retrofit provideRetrofitInstance(OkHttpClient client){
+    @Named("authRetrofit")
+    static Retrofit provideAuthRetrofitInstance(@Named("authOkHttpClient") OkHttpClient client){
         return new Retrofit.Builder()
                 .baseUrl(Constants.REDDIT_BASE_URL)
                 .client(client)
@@ -51,9 +42,22 @@ public class AppModule {
 
     @Singleton
     @Provides
-    static OkHttpClient provideOkHttpInstance(SupportInterceptor supportInterceptor){
+    @Named("mainRetrofit")
+    static Retrofit provideMainRetrofitInstance(@Named("mainOkHttpClient") OkHttpClient client){
+        return new Retrofit.Builder()
+                .baseUrl(Constants.REDDIT_API_URL)
+                .client(client)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    @Singleton
+    @Provides
+    @Named("authOkHttpClient")
+    static OkHttpClient provideOkHttpInstance(AuthInterceptor authInterceptor){
         OkHttpClient client = new OkHttpClient().newBuilder()
-                .addInterceptor(supportInterceptor)
+                .addInterceptor(authInterceptor)
                 .build();
 
         return client;
@@ -61,21 +65,26 @@ public class AppModule {
 
     @Singleton
     @Provides
-    static SupportInterceptor provideSupportInterceptor(){
-        return new SupportInterceptor();
+    @Named("mainOkHttpClient")
+    static OkHttpClient provideMainOkHttpInstance(MainInterceptor mainInterceptor){
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .addInterceptor(mainInterceptor)
+                .build();
+
+        return client;
     }
 
-//    @Singleton
-//    @Provides
-//    static AuthenticateUser provideAuthenticatedUser(NetworkClient client){
-//        return new AuthenticateUser(client);
-//    }
-//
-//    @Singleton
-//    @Provides
-//    static NetworkClient provideNetworkClient(AuthApi authApi){
-//        return new NetworkClient(authApi);
-//    }
+    @Singleton
+    @Provides
+    static AuthInterceptor provideAuthInterceptor(){
+        return new AuthInterceptor();
+    }
+
+    @Singleton
+    @Provides
+    static MainInterceptor provideMainInterceptor(SessionManager sessionManager){
+        return new MainInterceptor(sessionManager);
+    }
 
     @Singleton
     @Provides
