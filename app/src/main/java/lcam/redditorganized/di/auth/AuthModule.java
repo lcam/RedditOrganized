@@ -4,6 +4,7 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.network.auth.AuthApi;
 import lcam.redditorganized.network.auth.AuthNetworkClient;
 import lcam.redditorganized.network.auth.AuthenticateUser;
@@ -21,8 +22,8 @@ public class AuthModule {
 
     @AuthScope
     @Provides
-    static AuthenticateUser provideAuthenticatedUser(AuthNetworkClient client){
-        return new AuthenticateUser(client);
+    static AuthenticateUser provideAuthenticatedUser(AuthNetworkClient client, SessionManager sessionManager){
+        return new AuthenticateUser(client, sessionManager);
     }
 
     @AuthScope
