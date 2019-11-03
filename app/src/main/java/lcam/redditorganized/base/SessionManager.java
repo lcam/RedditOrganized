@@ -73,7 +73,8 @@ public class SessionManager {
 
     public void logOut(){
         //cachedToken.setValue(AuthResource.logout());
-        cachedToken.onNext(AuthResource.logout());
+        authResourceToken = AuthResource.logout();
+        cachedToken.onNext(authResourceToken);
     }
 
     public Observable<AuthResource<OAuthToken>> getAuthTokenObservable(){
