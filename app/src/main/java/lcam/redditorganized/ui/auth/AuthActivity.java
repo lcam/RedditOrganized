@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.RequestManager;
@@ -18,6 +17,8 @@ import com.bumptech.glide.RequestManager;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import lcam.redditorganized.R;
 import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.ui.main.MainActivity;
@@ -77,40 +78,86 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
         subscribeObservers();
     }
 
-    private void subscribeObservers(){ //start observing the LiveData
-        authViewModel.observeAuthState().observe(this, new Observer<AuthResource<OAuthToken>>() {
+    /*private void subscribeObservers(){ //start observing the LiveData
+        authViewModel.observeAuthState(this, new Observer<AuthResource<OAuthToken>>() {
             @Override
             public void onChanged(AuthResource<OAuthToken> userAuthResource) {
                 if(userAuthResource != null){
                     switch (userAuthResource.status){
-
                         case LOADING:{
-                            showProgressBar(true);
                             break;
                         }
-
                         case AUTHENTICATED:{
-                            showProgressBar(false);
-                            Log.d(TAG, "onChanged: LOGIN_SUCCESS: " + userAuthResource.data.getAccessToken());
-                            onLoginSuccess();
                             break;
                         }
-
                         case ERROR:{
-                            showProgressBar(false);
-                            Toast.makeText(AuthActivity.this, userAuthResource.message
-                                    + "\nWrong login!!!", Toast.LENGTH_SHORT).show();
                             break;
                         }
-
                         case NOT_AUTHENTICATED:{
-                            showProgressBar(false);
                             break;
                         }
                     }
                 }
             }
         });
+    }*/
+
+    private void subscribeObservers(){
+        authViewModel.observeAuthState().subscribe(new Observer<AuthResource<OAuthToken>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(AuthResource<OAuthToken> tokenAuthResource) {
+                Log.e(TAG, "onNext: DID I COME HERE?");
+                observeAuthStatus(tokenAuthResource);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+    }
+
+    private void observeAuthStatus(AuthResource<OAuthToken> tokenAuthResource){
+        if(tokenAuthResource != null){
+            switch (tokenAuthResource.status){
+                case LOADING:{
+                    Log.e(TAG, "observeAuthStatus: LOADING");
+                    showProgressBar(true);
+                    break;
+                }
+
+                case AUTHENTICATED:{
+                    Log.d(TAG, "observeAuthStatus: AUTHENTICATED: " + tokenAuthResource.data.getAccessToken());
+                    showProgressBar(false);
+                    onLoginSuccess();
+                    break;
+                }
+
+                case ERROR:{
+                    Log.e(TAG, "observeAuthStatus: ERROR");
+                    showProgressBar(false);
+                    Toast.makeText(AuthActivity.this, tokenAuthResource.message
+                            + "\nWRONG LOGIN", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case NOT_AUTHENTICATED:{
+                    Log.e(TAG, "observeAuthStatus: NOT AUTHENTICATED");
+                    showProgressBar(false);
+                    break;
+                }
+            }
+        }
     }
 
     //redirect to Main screen upon successful login

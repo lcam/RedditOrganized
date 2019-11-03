@@ -1,15 +1,14 @@
 package lcam.redditorganized.base;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
+import android.util.Log;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.BehaviorSubject;
 import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.ui.auth.AuthResource;
 
@@ -18,8 +17,13 @@ public class SessionManager {
 
     private static final String TAG = "SessionManager";
 
-    //using MediatorLiveData instead of just a basic obj (User user) cuz I want this obj to be observable
-    private MediatorLiveData<AuthResource<OAuthToken>> cachedToken = new MediatorLiveData<>();
+    private AuthResource<OAuthToken> authResourceToken = AuthResource.logout();
+
+//    private Observable<AuthResource<OAuthToken>> cachedToken = Observable.just(authResourceToken)
+//            .subscribeOn(Schedulers.io());
+
+    private BehaviorSubject<AuthResource<OAuthToken>> cachedToken = BehaviorSubject.create();
+
 
     @Inject
     public SessionManager() {
@@ -39,26 +43,44 @@ public class SessionManager {
 //        }
 //    }
 
-    public void authenticateWithId(Flowable<AuthResource<OAuthToken>> token){
-        final LiveData<AuthResource<OAuthToken>> source = LiveDataReactiveStreams.fromPublisher(token);
-        //get source LiveData obj set to  authUser LiveData obj --> by using MediatorLiveData
-        if(cachedToken != null){
-            cachedToken.setValue(AuthResource.loading((OAuthToken) null));
-            cachedToken.addSource(source, new Observer<AuthResource<OAuthToken>>() {
-                @Override
-                public void onChanged(AuthResource<OAuthToken> userAuthResource) {
-                    cachedToken.setValue(userAuthResource);
-                    cachedToken.removeSource(source);
-                }
-            });
-        }
+    public void authenticateWithId(Observable<AuthResource<OAuthToken>> token){
+        token.subscribe(new Observer<AuthResource<OAuthToken>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.e(TAG, "onSubscribe: Set logout state as default");
+                cachedToken.onNext(AuthResource.logout());
+            }
+
+            @Override
+            public void onNext(AuthResource<OAuthToken> tokenAuthResource) {
+                Log.e(TAG, "onNext: Use OAuthToken obj from API call");
+                authResourceToken = tokenAuthResource; //cache to OAuthToken object
+
+                cachedToken.onNext(authResourceToken);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, "onError: in SessionManager");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.e(TAG, "onComplete: in SessionManager");
+            }
+        });
     }
 
     public void logOut(){
-        cachedToken.setValue(AuthResource.<OAuthToken>logout());
+        //cachedToken.setValue(AuthResource.logout());
+        cachedToken.onNext(AuthResource.logout());
     }
 
-    public LiveData<AuthResource<OAuthToken>> getAuthUser(){
-        return cachedToken;
+    public Observable<AuthResource<OAuthToken>> getAuthTokenObservable(){
+        return cachedToken; //used to observe auth changes
+    }
+
+    public OAuthToken getCachedToken(){
+        return authResourceToken.data; //used to peek at cached auth obj
     }
 }

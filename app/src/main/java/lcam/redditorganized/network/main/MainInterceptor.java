@@ -21,7 +21,8 @@ public class MainInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
 
-        String accessToken = sessionManager.getAuthUser().getValue().data.getAccessToken();
+        //String accessToken = sessionManager.getAuthUser().getValue().data.getAccessToken();
+        String accessToken = sessionManager.getCachedToken().getAccessToken();
 
         Request request = chain.request()
                 .newBuilder()
