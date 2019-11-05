@@ -19,29 +19,12 @@ public class SessionManager {
 
     private AuthResource<OAuthToken> authResourceToken = AuthResource.logout();
 
-//    private Observable<AuthResource<OAuthToken>> cachedToken = Observable.just(authResourceToken)
-//            .subscribeOn(Schedulers.io());
-
     private BehaviorSubject<AuthResource<OAuthToken>> cachedToken = BehaviorSubject.create();
 
 
     @Inject
     public SessionManager() {
     }
-
-//    public void authenticateWithId(final LiveData<AuthResource<OAuthToken>> source){
-//        //get source LiveData obj set to  authUser LiveData obj --> by using MediatorLiveData
-//        if(cachedToken != null){
-//            cachedToken.setValue(AuthResource.loading((OAuthToken) null));
-//            cachedToken.addSource(source, new Observer<AuthResource<OAuthToken>>() {
-//                @Override
-//                public void onChanged(AuthResource<OAuthToken> userAuthResource) {
-//                    cachedToken.setValue(userAuthResource);
-//                    cachedToken.removeSource(source);
-//                }
-//            });
-//        }
-//    }
 
     public void authenticateWithId(Observable<AuthResource<OAuthToken>> token){
         token.subscribe(new Observer<AuthResource<OAuthToken>>() {

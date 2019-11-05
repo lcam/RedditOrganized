@@ -1,6 +1,6 @@
 package lcam.redditorganized.network.auth;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.util.Constants;
 import retrofit2.http.Field;
@@ -11,7 +11,7 @@ public interface AuthApi {
 
     @FormUrlEncoded
     @POST(Constants.ACCESS_TOKEN_URL)
-    Flowable<OAuthToken> requestTokenForm(
+    Single<OAuthToken> requestTokenForm(
             @Field("code")String code,
             @Field("client_id")String client_id,
             @Field("redirect_uri")String redirect_uri,

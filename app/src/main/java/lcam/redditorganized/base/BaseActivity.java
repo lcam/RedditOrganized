@@ -28,28 +28,6 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     }
 
     private void subscribeObservers(){
-//        sessionManager.getAuthUser().observe(this, new Observer<AuthResource<OAuthToken>>() {
-//            @Override
-//            public void onChanged(AuthResource<OAuthToken> userAuthResource) {
-//                if(userAuthResource != null){
-//                    switch (userAuthResource.status){
-//
-//                        case LOADING:{
-//                            break;
-//                        }
-//                        case AUTHENTICATED:{
-//                            break;
-//                        }
-//                        case ERROR:{
-//                            break;
-//                        }
-//                        case NOT_AUTHENTICATED:{
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        });
 
         //SessionManager obj has an auth observable, let's get it and subscribe to it
         sessionManager.getAuthTokenObservable().subscribe(new Observer<AuthResource<OAuthToken>>() {

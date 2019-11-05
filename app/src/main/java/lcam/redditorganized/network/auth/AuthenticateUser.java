@@ -23,7 +23,6 @@ public class AuthenticateUser {
     }
 
     public void queryToken(String code){
-        //        return LiveDataReactiveStreams.fromPublisher()
 
         sessionManager.authenticateWithId(
                 authNetworkClient.requestToken(code)

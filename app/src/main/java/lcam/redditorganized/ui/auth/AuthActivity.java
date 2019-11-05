@@ -78,30 +78,6 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
         subscribeObservers();
     }
 
-    /*private void subscribeObservers(){ //start observing the LiveData
-        authViewModel.observeAuthState(this, new Observer<AuthResource<OAuthToken>>() {
-            @Override
-            public void onChanged(AuthResource<OAuthToken> userAuthResource) {
-                if(userAuthResource != null){
-                    switch (userAuthResource.status){
-                        case LOADING:{
-                            break;
-                        }
-                        case AUTHENTICATED:{
-                            break;
-                        }
-                        case ERROR:{
-                            break;
-                        }
-                        case NOT_AUTHENTICATED:{
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-    }*/
-
     private void subscribeObservers(){
         authViewModel.observeAuthState().subscribe(new Observer<AuthResource<OAuthToken>>() {
             @Override
