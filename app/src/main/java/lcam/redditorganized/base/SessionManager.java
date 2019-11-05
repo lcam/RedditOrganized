@@ -17,7 +17,7 @@ public class SessionManager {
 
     private static final String TAG = "SessionManager";
 
-    private AuthResource<OAuthToken> authResourceToken = AuthResource.logout();
+    private AuthResource<OAuthToken> authResourceCache = AuthResource.logout();
 
     private BehaviorSubject<AuthResource<OAuthToken>> cachedToken = BehaviorSubject.create();
 
@@ -26,38 +26,29 @@ public class SessionManager {
     public SessionManager() {
     }
 
-    public void authenticateWithId(Observable<AuthResource<OAuthToken>> token){
-        token.subscribe(new Observer<AuthResource<OAuthToken>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.e(TAG, "onSubscribe: Set logout state as default");
-                cachedToken.onNext(AuthResource.logout());
-            }
+    public void authenticateWithId(AuthResource<OAuthToken> authResource){
+        Log.e(TAG, "onNext: Use OAuthToken obj from API call");
+        authResourceCache = authResource; //cache to OAuthToken object
+        cachedToken.onNext(authResourceCache);
+    }
 
-            @Override
-            public void onNext(AuthResource<OAuthToken> tokenAuthResource) {
-                Log.e(TAG, "onNext: Use OAuthToken obj from API call");
-                authResourceToken = tokenAuthResource; //cache to OAuthToken object
+    public void errorCase(Throwable e){
+        Log.e(TAG, "onError: in SessionManager");
+    }
 
-                cachedToken.onNext(authResourceToken);
-            }
+    public void completeCase(){
+        Log.e(TAG, "onComplete: in SessionManager");
+    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG, "onError: in SessionManager");
-            }
-
-            @Override
-            public void onComplete() {
-                Log.e(TAG, "onComplete: in SessionManager");
-            }
-        });
+    public void subscribeCase(Disposable d){
+        Log.e(TAG, "onSubscribe: Set logout state as default");
+        cachedToken.onNext(AuthResource.logout());
     }
 
     public void logOut(){
         //cachedToken.setValue(AuthResource.logout());
-        authResourceToken = AuthResource.logout();
-        cachedToken.onNext(authResourceToken);
+        authResourceCache = AuthResource.logout();
+        cachedToken.onNext(authResourceCache);
     }
 
     public Observable<AuthResource<OAuthToken>> getAuthTokenObservable(){
@@ -65,6 +56,6 @@ public class SessionManager {
     }
 
     public OAuthToken getCachedToken(){
-        return authResourceToken.data; //used to peek at cached auth obj
+        return authResourceCache.data; //used to peek at cached auth obj
     }
 }

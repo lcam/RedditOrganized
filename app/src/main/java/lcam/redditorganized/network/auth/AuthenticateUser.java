@@ -3,7 +3,8 @@ package lcam.redditorganized.network.auth;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function;
+import io.reactivex.Single;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import lcam.redditorganized.base.SessionManager;
 import lcam.redditorganized.models.OAuthToken;
@@ -23,36 +24,24 @@ public class AuthenticateUser {
     }
 
     public void queryToken(String code){
+        Single<OAuthToken> source = authNetworkClient.requestToken(code);
 
-        sessionManager.authenticateWithId(
-                authNetworkClient.requestToken(code)
-
-                        .toObservable()
-
-                        //instead of calling onError (error happens)
-                        .onErrorReturn(new Function<Throwable, OAuthToken>() {
-                            @Override
-                            public OAuthToken apply(Throwable throwable) throws Exception {
-                                OAuthToken errorToken = new OAuthToken("","");
-                                errorToken.setAccessToken("");
-                                return errorToken;
-                            }
-                        })
-
-                        //wrap User object in AuthResource
-                        .map(new Function<OAuthToken, AuthResource<OAuthToken>>() {
-                            @Override
-                            public AuthResource<OAuthToken> apply(OAuthToken oAuthToken) throws Exception {
-                                if(oAuthToken.getAccessToken().equals("")){
-                                    return AuthResource.error("Could not authenticate", (OAuthToken) null);
-                                }
-                                return AuthResource.authenticated(oAuthToken); //no error
-                            }
-                        })
-
-                        .subscribeOn(Schedulers.io()) //subscribe on a background thread
-
-        );
+        //converting Single to Observable to use onSubscribe()
+        Disposable authDisposable = source.toObservable()
+                .onErrorReturnItem(new OAuthToken("", ""))
+                .map(token -> {
+                    if(token.getAccessToken().equals("")){
+                        return AuthResource.error("Could not authenticate", null);
+                    }
+                    return AuthResource.authenticated(token); })
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        authResource -> sessionManager.authenticateWithId((AuthResource<OAuthToken>) authResource),
+                        throwable -> sessionManager.errorCase(throwable),
+                        () -> sessionManager.completeCase(),
+                        disposable -> {
+                            sessionManager.subscribeCase(disposable);
+                        });
     }
 
     public Observable<AuthResource<OAuthToken>> observeCachedToken(){

@@ -79,28 +79,9 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void subscribeObservers(){
-        authViewModel.observeAuthState().subscribe(new Observer<AuthResource<OAuthToken>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(AuthResource<OAuthToken> tokenAuthResource) {
-                Log.e(TAG, "onNext: DID I COME HERE?");
-                observeAuthStatus(tokenAuthResource);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
+        Disposable disposable = authViewModel.observeAuthState().subscribe(
+                tokenAuthResource -> observeAuthStatus(tokenAuthResource)
+        );
     }
 
     private void observeAuthStatus(AuthResource<OAuthToken> tokenAuthResource){

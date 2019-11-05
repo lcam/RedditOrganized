@@ -2,6 +2,7 @@ package lcam.redditorganized.base;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -28,47 +29,32 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     }
 
     private void subscribeObservers(){
-
         //SessionManager obj has an auth observable, let's get it and subscribe to it
-        sessionManager.getAuthTokenObservable().subscribe(new Observer<AuthResource<OAuthToken>>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(AuthResource<OAuthToken> tokenAuthResource) {
-                observeAuthStatus(tokenAuthResource);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
+        Disposable disposable = sessionManager.getAuthTokenObservable().subscribe(
+                tokenAuthResource -> observeAuthStatus(tokenAuthResource)
+        );
     }
 
     private void observeAuthStatus(AuthResource<OAuthToken> tokenAuthResource){
         if(tokenAuthResource != null){
             switch (tokenAuthResource.status){
                 case LOADING:{
+                    Log.e(TAG, "observeAuthStatus: in BaseActivity LOADING");
                     break;
                 }
 
                 case AUTHENTICATED:{
+                    Log.e(TAG, "observeAuthStatus: in BaseActivity AUTHENTICATED");
                     break;
                 }
 
                 case ERROR:{
+                    Log.e(TAG, "observeAuthStatus: in BaseActivity ERROR");
                     break;
                 }
 
                 case NOT_AUTHENTICATED:{
+                    Log.e(TAG, "observeAuthStatus: in BaseActivity NOT_AUTHENTICATED");
                     navLoginScreen(); //redirect to login screen if user gets logged out for whatever reason
                     break;
                 }
