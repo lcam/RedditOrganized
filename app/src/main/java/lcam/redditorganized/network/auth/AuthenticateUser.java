@@ -39,9 +39,7 @@ public class AuthenticateUser {
                         authResource -> sessionManager.authenticateWithId((AuthResource<OAuthToken>) authResource),
                         throwable -> sessionManager.errorCase(throwable),
                         () -> sessionManager.completeCase(),
-                        disposable -> {
-                            sessionManager.subscribeCase(disposable);
-                        });
+                        disposable -> sessionManager.subscribeCase(disposable));
     }
 
     public Observable<AuthResource<OAuthToken>> observeCachedToken(){

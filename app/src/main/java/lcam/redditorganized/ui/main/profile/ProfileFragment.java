@@ -10,16 +10,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
+import io.reactivex.disposables.Disposable;
 import lcam.redditorganized.R;
-import lcam.redditorganized.models.OAuthToken;
 import lcam.redditorganized.models.User;
-import lcam.redditorganized.ui.auth.AuthResource;
 import lcam.redditorganized.ui.main.Resource;
 import lcam.redditorganized.viewmodels.ViewModelProviderFactory;
 
@@ -54,30 +52,32 @@ public class ProfileFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(){
-        //removeObservers() and getViewLifecycleOwner() is specifically for fragments cuz they have their own lifecyle
-        //fragments just do what the Android system wants them to do, so we gotta make sure to clean up the observers
-        viewModel.getAuthenticatedUsername().removeObservers(getViewLifecycleOwner());
-        viewModel.getAuthenticatedUsername().observe(getViewLifecycleOwner(), new Observer<Resource<User>>() {
-            @Override
-            public void onChanged(Resource<User> userResource) {
 
-                if(userResource != null){
-                    switch (userResource.status){
+        Disposable disposable = viewModel.getAuthenticatedUsername().subscribe(
+                userResource -> {
+                    Log.e(TAG, "subscribeObservers: onNext AT PROFILE FRAGMENT");
+                    observeUserName(userResource);
+                },
+                throwable -> Log.e(TAG, "subscribeObservers: onError: " + throwable)
+        );
+    }
 
-                        case SUCCESS:{
-                            setUserDetails(userResource.data);
-                            break;
-                        }
+    private void observeUserName(Resource<User> userResource){
+        if(userResource != null){
+            switch (userResource.status){
 
-                        case ERROR:{
-                            setErrorDetails(userResource.message);
-                            break;
-                        }
-                    }
+                case SUCCESS:{
+                    Log.e(TAG, "observeUserName: SUCCESS");
+                    setUserDetails(userResource.data);
+                    break;
                 }
 
+                case ERROR:{
+                    setErrorDetails(userResource.message);
+                    break;
+                }
             }
-        });
+        }
     }
 
     private void setErrorDetails(String message) {

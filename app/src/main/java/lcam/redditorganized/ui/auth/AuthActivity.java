@@ -17,7 +17,6 @@ import com.bumptech.glide.RequestManager;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
-import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import lcam.redditorganized.R;
 import lcam.redditorganized.models.OAuthToken;
@@ -80,7 +79,10 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private void subscribeObservers(){
         Disposable disposable = authViewModel.observeAuthState().subscribe(
-                tokenAuthResource -> observeAuthStatus(tokenAuthResource)
+                tokenAuthResource -> {
+                    Log.e(TAG, "subscribeObservers: onNext AM I HERE?");
+                    observeAuthStatus(tokenAuthResource);
+                }
         );
     }
 

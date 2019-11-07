@@ -2,14 +2,11 @@ package lcam.redditorganized.network.main;
 
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-
 import java.util.ArrayList;
-
 import javax.inject.Inject;
-
-import io.reactivex.functions.Function;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import lcam.redditorganized.models.ListData;
 import lcam.redditorganized.models.SavedList;
@@ -30,73 +27,59 @@ public class RequestProfile {
     }
 
 
-    public LiveData<Resource<User>> queryName(){
-        //converting Flowable to LiveData obj, doing the api call
-        return LiveDataReactiveStreams.fromPublisher(
-                mainNetworkClient.requestName()
+    public Observable<Resource<User>> queryName(){
 
-                        //instead of calling onError (error happens)
-                        .onErrorReturn(new Function<Throwable, User>() {
-                            @Override
-                            public User apply(Throwable throwable) throws Exception {
-                                User errorUser = new User("");
-                                return errorUser;
-                            }
-                        })
+        Single<User> source = mainNetworkClient.requestName();
 
-                        //wrap User object in AuthResource
-                        .map(new Function<User, Resource<User>>() {
-                            @Override
-                            public Resource<User> apply(User user) throws Exception {
-                                if(user.getUsername().equals("")){
-                                    return Resource.error("Could not retrieve name", (User) null);
-                                }
-                                return Resource.success(user); //no error
-                            }
-                        })
+        return source.toObservable()
+                .onErrorReturnItem(new User(""))
+                .map(user -> {
+                    if(user.getUsername().equals("")){
+                        Log.e(TAG, "queryName: ABOUT TO RETURN ERROR UGGHHH");
+                        return Resource.error("Could not retrieve name", (User) null);
+                    }
 
-                        .subscribeOn(Schedulers.io()) //subscribe on a background thread
-        );
+                    Log.e(TAG, "queryName: SUCCESS, ABOUT TO RETURN USER");
+                    return Resource.success(user); })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public LiveData<Resource<SavedList>> queryPosts(String username){
-        return LiveDataReactiveStreams.fromPublisher(
-                    mainNetworkClient.requestSavedList(username)
+    public Observable<Resource<SavedList>> queryPosts(String username){
 
-                        .onErrorReturn(new Function<Throwable, SavedList>() {
-                            @Override
-                            public SavedList apply(Throwable throwable) throws Exception {
-                                Log.e(TAG, "apply: ", throwable);
+        Single<SavedList> source = mainNetworkClient.requestSavedList(username);
 
-                                //SavedList -> ListData -> List<SavedPost> -> SavedPostAttributes
-                                SavedPostAttributes savedPostAttributes = new SavedPostAttributes("");
-                                SavedPost savedPost = new SavedPost(savedPostAttributes);
-                                ArrayList<SavedPost> savedPostsList = new ArrayList<>();
-                                savedPostsList.add(savedPost);
-                                ListData listData = new ListData(1, savedPostsList);
-                                SavedList savedList = new SavedList(listData);
+//        Observable<SavedList> source = queryName().flatMap(userResource ->
+//            mainNetworkClient.requestSavedList(userResource.data.getUsername())
+//        );
 
-                                return savedList;
-                            }
-                        })
+        return source.toObservable()
+                .onErrorReturnItem(defaultSavedList())
+                .map(savedList -> {
+                    if(savedList!=null){
+                        if(savedList.getListData().getSavedPostList().get(0).getSavedPostAttributes().getTitle().equals("")){
+                            Log.e(TAG, "queryPosts: ABOUT TO RETURN AN ERROR");
+                            return Resource.error("Something went wrong", (SavedList) null);
+                        }
+                    }
 
-                        .map(new Function<SavedList, Resource<SavedList>>() {
-                            @Override
-                            public Resource<SavedList> apply(SavedList savedList) throws Exception {
+                    Log.e(TAG, "queryPosts: SUCCESS, ABOUT TO RETURN SAVED LIST");
+                    return Resource.success(savedList); })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
-                                if(savedList!=null){
-                                    if(savedList.getListData().getSavedPostList().get(0).getSavedPostAttributes().getTitle().equals("")){
-                                        return Resource.error("Something went wrong", null);
-                                    }
-                                }
+    }
 
-                                return Resource.success(savedList);
-                            }
-                        })
+    private SavedList defaultSavedList(){
+        //SavedList -> ListData -> List<SavedPost> -> SavedPostAttributes
+        SavedPostAttributes savedPostAttributes = new SavedPostAttributes("");
+        SavedPost savedPost = new SavedPost(savedPostAttributes);
+        ArrayList<SavedPost> savedPostsList = new ArrayList<>();
+        savedPostsList.add(savedPost);
+        ListData listData = new ListData(1, savedPostsList);
+        SavedList savedList = new SavedList(listData);
 
-                        .subscribeOn(Schedulers.io())
-        );
-
+        return savedList;
     }
 
 }

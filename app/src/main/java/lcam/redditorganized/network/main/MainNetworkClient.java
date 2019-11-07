@@ -2,7 +2,7 @@ package lcam.redditorganized.network.main;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 import lcam.redditorganized.models.SavedList;
 import lcam.redditorganized.models.User;
 
@@ -15,11 +15,11 @@ public class MainNetworkClient {
         this.mainApi = mainApi;
     }
 
-    Flowable<User> requestName(){
+    Single<User> requestName(){
         return mainApi.getUserName();
     }
 
-    Flowable<SavedList> requestSavedList(String username){
+    Single<SavedList> requestSavedList(String username){
         return mainApi.getSavedListFromUser(username);
     }
 }

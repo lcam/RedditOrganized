@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
+import io.reactivex.disposables.Disposable;
 import lcam.redditorganized.R;
 import lcam.redditorganized.models.SavedList;
 import lcam.redditorganized.models.User;
@@ -53,56 +53,45 @@ public class PostsFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(){
-        viewModel.getAuthenticatedUsername().removeObservers(getViewLifecycleOwner()); //make sure to remove observers
-        viewModel.getAuthenticatedUsername().observe(getViewLifecycleOwner(), new Observer<Resource<User>>() {
-            @Override
-            public void onChanged(Resource<User> userResource) {
-                if(userResource != null){
-                    switch (userResource.status){
 
-                        case SUCCESS:{
-                            Log.d(TAG, "onChanged: Got username!");
-                            subscribeObserversPosts(userResource.data);
-                            break;
-                        }
-
-                        case ERROR:{
-                            Log.d(TAG, "onChanged: ERROR!" + userResource.message);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
+        Disposable disposable = viewModel.getAuthenticatedUsername().subscribe(
+                userResource -> subscribeObserversPosts(userResource.data),
+                throwable -> Log.e(TAG, "subscribeObservers: onError " + throwable)
+        );
     }
 
     private void subscribeObserversPosts(User user){
-        viewModel.observePosts(user).removeObservers(getViewLifecycleOwner()); //make sure to remove observers
-        viewModel.observePosts(user).observe(getViewLifecycleOwner(), new Observer<Resource<SavedList>>() {
-            @Override
-            public void onChanged(Resource<SavedList> listResource) {
-                if(listResource != null){
-                    switch (listResource.status){
 
-                        case LOADING:{
-                            Log.d(TAG, "onChanged: LOADING...");
-                            break;
-                        }
+        Disposable disposable = viewModel.observePosts(user).subscribe(
+                savedListResource -> {
+                    Log.e(TAG, "subscribeObserversPosts: onNext AT POSTS FRAGMENT");
+                    observePosts(savedListResource);
+                },
+                throwable -> Log.e(TAG, "subscribeObserversPosts: onError " + throwable)
+        );
+    }
 
-                        case SUCCESS:{
-                            Log.d(TAG, "onChanged: Got posts!");
-                            adapter.setPosts(listResource.data.getListData().getSavedPostList());
-                            break;
-                        }
+    private void observePosts(Resource<SavedList> listResource){
+        if(listResource != null){
+            switch (listResource.status){
 
-                        case ERROR:{
-                            Log.d(TAG, "onChanged: ERROR!" + listResource.message);
-                            break;
-                        }
-                    }
+                case LOADING:{
+                    Log.e(TAG, "onChanged: LOADING...");
+                    break;
+                }
+
+                case SUCCESS:{
+                    Log.e(TAG, "onChanged: Got posts!");
+                    adapter.setPosts(listResource.data.getListData().getSavedPostList());
+                    break;
+                }
+
+                case ERROR:{
+                    Log.e(TAG, "onChanged: ERROR!" + listResource.message);
+                    break;
                 }
             }
-        });
+        }
     }
 
     private void initRecylerView(){
