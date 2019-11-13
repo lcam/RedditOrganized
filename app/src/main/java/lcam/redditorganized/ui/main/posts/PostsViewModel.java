@@ -28,7 +28,7 @@ public class PostsViewModel extends ViewModel {
         return requestProfile.queryName();
     }
 
-    public io.reactivex.Observable<Resource<SavedList>> observePosts(User user){
+    public Observable<Resource<SavedList>> observePosts(User user){
 
         return requestProfile.queryPosts(user.getUsername());
     }

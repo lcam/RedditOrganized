@@ -52,6 +52,7 @@ public class ProfileFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(){
+        Log.e(TAG, "subscribeObservers: At the start");
 
         Disposable disposable = viewModel.getAuthenticatedUsername().subscribe(
                 userResource -> {

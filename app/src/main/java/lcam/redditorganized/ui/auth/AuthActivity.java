@@ -121,6 +121,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
     //redirect to Main screen upon successful login
     private void onLoginSuccess(){
+        Log.e(TAG, "onLoginSuccess: At the start!");
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

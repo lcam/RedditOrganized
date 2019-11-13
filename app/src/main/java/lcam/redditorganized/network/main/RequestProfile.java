@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import lcam.redditorganized.models.ListData;
 import lcam.redditorganized.models.SavedList;
@@ -26,8 +27,8 @@ public class RequestProfile {
         this.mainNetworkClient = mainNetworkClient;
     }
 
-
     public Observable<Resource<User>> queryName(){
+        Log.e(TAG, "queryName: At the start");
 
         Single<User> source = mainNetworkClient.requestName();
 
@@ -48,10 +49,6 @@ public class RequestProfile {
     public Observable<Resource<SavedList>> queryPosts(String username){
 
         Single<SavedList> source = mainNetworkClient.requestSavedList(username);
-
-//        Observable<SavedList> source = queryName().flatMap(userResource ->
-//            mainNetworkClient.requestSavedList(userResource.data.getUsername())
-//        );
 
         return source.toObservable()
                 .onErrorReturnItem(defaultSavedList())
