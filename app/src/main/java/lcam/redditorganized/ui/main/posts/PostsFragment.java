@@ -53,6 +53,7 @@ public class PostsFragment extends DaggerFragment {
     }
 
     private void subscribeObservers(){
+        Log.e(TAG, "subscribeObservers: at the start (Posts Fragment)");
 
         Disposable disposable = viewModel.getAuthenticatedUsername().subscribe(
                 userResource -> subscribeObserversPosts(userResource.data),
