@@ -24,6 +24,7 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: I'm in BaseActivity************");
         super.onCreate(savedInstanceState);
         subscribeObservers();
     }
