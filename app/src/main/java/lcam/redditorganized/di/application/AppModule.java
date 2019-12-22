@@ -101,7 +101,7 @@ public class AppModule {
                 .setDefaultRequestOptions(requestOptions);
     }
 
-    @Singleton
+    @Singleton //application obj because of bindsInstance in AppComponent!!!!!!!!!!!!
     @Provides //application obj is available to me because it was bound when AppComponent is created
     static Drawable provideAppDrawable(Application application){
         return ContextCompat.getDrawable(application, R.drawable.logo);

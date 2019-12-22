@@ -80,7 +80,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     private void subscribeObservers(){
         Disposable disposable = authViewModel.observeAuthState().subscribe(
                 tokenAuthResource -> {
-                    Log.e(TAG, "subscribeObservers: onNext AM I HERE?");
+                    Log.e(TAG, "subscribeObservers: onNext I AM HERE---");
                     observeAuthStatus(tokenAuthResource);
                 }
         );

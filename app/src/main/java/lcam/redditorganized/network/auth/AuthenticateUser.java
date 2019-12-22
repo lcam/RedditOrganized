@@ -1,5 +1,7 @@
 package lcam.redditorganized.network.auth;
 
+import android.util.Log;
+
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
@@ -28,7 +30,7 @@ public class AuthenticateUser {
 
         //converting Single to Observable to use onSubscribe()
         Disposable authDisposable = source.toObservable()
-                .onErrorReturnItem(new OAuthToken("", ""))
+                .onErrorReturn(throwable -> defaultToken(throwable))
                 .map(token -> {
                     if(token.getAccessToken().equals("")){
                         return AuthResource.error("Could not authenticate", null);
@@ -40,6 +42,11 @@ public class AuthenticateUser {
                         throwable -> sessionManager.errorCase(throwable),
                         () -> sessionManager.completeCase(),
                         disposable -> sessionManager.subscribeCase(disposable));
+    }
+
+    private OAuthToken defaultToken(Throwable throwable) {
+        Log.e(TAG, "defaultToken: ERROR " + throwable.getLocalizedMessage());
+        return new OAuthToken("", "");
     }
 
     public Observable<AuthResource<OAuthToken>> observeCachedToken(){

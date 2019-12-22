@@ -59,7 +59,7 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
 
     // ViewModel and LiveData
-    def lifecycle_version = '2.2.0-rc01'
+    def lifecycle_version = '2.2.0-rc02'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "android.arch.lifecycle:viewmodel:$lifecycle_version"
 
@@ -74,7 +74,11 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
 
+    def mokito_version = "3.1.0"
     testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:$mokito_version"
+    testImplementation "android.arch.core:core-testing:1.1.1"
+
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }

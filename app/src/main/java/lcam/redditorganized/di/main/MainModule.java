@@ -34,7 +34,7 @@ public class MainModule {
 
     @MainScope
     @Provides
-    static MainNetworkClient provideAuthNetworkClient(MainApi mainApi){
+    static MainNetworkClient provideMainNetworkClient(MainApi mainApi){
         return new MainNetworkClient(mainApi);
     }
 }

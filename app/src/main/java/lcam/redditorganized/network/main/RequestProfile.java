@@ -33,14 +33,14 @@ public class RequestProfile {
         Single<User> source = mainNetworkClient.requestName();
 
         return source.toObservable()
-                .onErrorReturnItem(new User(""))
+                .onErrorReturn(throwable -> defaultUser(throwable))
                 .map(user -> {
                     if(user.getUsername().equals("")){
                         Log.e(TAG, "queryName: ABOUT TO RETURN ERROR UGGHHH");
                         return Resource.error("Could not retrieve name", (User) null);
                     }
 
-                    Log.e(TAG, "queryName: SUCCESS, ABOUT TO RETURN USER");
+                    Log.e(TAG, "queryName: SUCCESS, ABOUT TO RETURN USER VER 2");
                     return Resource.success(user); })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -65,6 +65,11 @@ public class RequestProfile {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
+    }
+
+    private User defaultUser(Throwable throwable) {
+        Log.e(TAG, "defaultUser: ERROR " + throwable.getLocalizedMessage());
+        return new User("");
     }
 
     private SavedList defaultSavedList(){
